@@ -21,7 +21,7 @@ env:
 install:
 
 before_install:
-  - sudo apt-get -qq update
+  # - sudo apt-get -qq update
   # - sudo apt-get install -y libxml2-dev libxmlsec1-dev
 
 before_script:
