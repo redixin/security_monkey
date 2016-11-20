@@ -141,8 +141,8 @@ def test_produce():
         pass
 
 
-def test_form_brack():
-    from security_monkey.common.PolicyDiff import formbrack
+def test_form_brackets():
+    from security_monkey.common.PolicyDiff import form_brackets
 
     test_values = [
         {
@@ -168,23 +168,24 @@ def test_form_brack():
     ]
 
     for value in test_values:
-        result = formbrack(value['value'], 0)
+        result = form_brackets(value['value'], 0)
         assert value["open"] == result["open"]
         assert value["close"] == result["close"]
 
 
-def test_char_for_type():
-    from security_monkey.common.PolicyDiff import charfortype
+def test_get_brackets():
+    from security_monkey.common.PolicyDiff import get_brackets
 
     values = [
-        ("str", "\"\""),
-        (u"uni", "\"\""),
-        ([1,2,3], "[]"),
-        ({"a": 123}, "{}"),
-        (True, "  "),
+        ("str", dict(open="\"", close="\"")),
+        (u"uni", dict(open="\"", close="\"")),
+        ([1,2,3], dict(open="[", close="]")),
+        ({"a": 123}, dict(open="{", close="}")),
+        (True, dict(open="", close="")),
+        (123, dict(open="", close="")),
     ]
     for value in values:
-        assert charfortype(value[0]) == value[1]
+        assert get_brackets(value[0]) == value[1]
 
 
 def test_added():
@@ -203,7 +204,7 @@ def test_same():
 
 
 def test_str_distance():
-    from security_monkey.common.PolicyDiff import strdistance
+    from security_monkey.common.PolicyDiff import str_distance
     values = [
         ("abcdefg", "abcdefg", 0),
         ("abcdefg", "abcdef0", 1),
@@ -212,11 +213,11 @@ def test_str_distance():
     ]
 
     for value in values:
-        assert strdistance(value[0], value[1]) == value[2]
+        assert str_distance(value[0], value[1]) == value[2]
 
 
 def test_find_most_similar():
-    from security_monkey.common.PolicyDiff import findmostsimilar
+    from security_monkey.common.PolicyDiff import find_most_similar
 
     values = [
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -224,17 +225,17 @@ def test_find_most_similar():
         "November 2, 1962"
     ]
 
-    assert findmostsimilar("ABCDEFGHIJKLMNOPQRSTU", values) == values[0]
-    assert findmostsimilar(123456789, values) == values[1]
-    assert findmostsimilar(1234567890, values) == values[1]
-    assert findmostsimilar("November", values) == values[2]
+    assert find_most_similar("ABCDEFGHIJKLMNOPQRSTU", values) == values[0]
+    assert find_most_similar(123456789, values) == values[1]
+    assert find_most_similar(1234567890, values) == values[1]
+    assert find_most_similar("November", values) == values[2]
 
     values = ["Incredible"]
-    assert findmostsimilar("November", values) == values[0]
+    assert find_most_similar("November", values) == values[0]
 
 
-def test_print_something():
-    from security_monkey.common.PolicyDiff import printsomething
+def test_print_item():
+    from security_monkey.common.PolicyDiff import print_item
 
     values = [
         ("<script>", "&lt;script&gt;"),
@@ -249,11 +250,11 @@ def test_print_something():
     ]
 
     for value in values:
-        assert printsomething(value[0], 'same', 0) == value[1]
+        assert print_item(value[0], 'same', 0) == value[1]
 
 
 def test_print_list():
-    from security_monkey.common.PolicyDiff import printlist
+    from security_monkey.common.PolicyDiff import print_list
 
     values = [
         "string",
@@ -288,13 +289,13 @@ def test_print_list():
 <font color='{color}'></font><br/>
 """
 
-    assert printlist(values, 'same', 0) == expected.format(color='black').replace('[[', '{').replace(']]', '}')
-    assert printlist(values, 'deleted', 0) == expected.format(color='red').replace('[[', '{').replace(']]', '}')
-    assert printlist(values, 'added', 0) == expected.format(color='green').replace('[[', '{').replace(']]', '}')
+    assert print_list(values, 'same', 0) == expected.format(color='black').replace('[[', '{').replace(']]', '}')
+    assert print_list(values, 'deleted', 0) == expected.format(color='red').replace('[[', '{').replace(']]', '}')
+    assert print_list(values, 'added', 0) == expected.format(color='green').replace('[[', '{').replace(']]', '}')
 
 
 def test_print_dict():
-    from security_monkey.common.PolicyDiff import printdict
+    from security_monkey.common.PolicyDiff import print_dict
 
     values = {
         "a": "<script>",
@@ -321,9 +322,9 @@ def test_print_dict():
 <font color='{color}'>"f": </font><br/>
 """
 
-    assert printdict(values, 'same', 0) == expected.format(color='black').replace('[[', '{').replace(']]', '}')
-    assert printdict(values, 'deleted', 0) == expected.format(color='red').replace('[[', '{').replace(']]', '}')
-    assert printdict(values, 'added', 0) == expected.format(color='green').replace('[[', '{').replace(']]', '}')
+    assert print_dict(values, 'same', 0) == expected.format(color='black').replace('[[', '{').replace(']]', '}')
+    assert print_dict(values, 'deleted', 0) == expected.format(color='red').replace('[[', '{').replace(']]', '}')
+    assert print_dict(values, 'added', 0) == expected.format(color='green').replace('[[', '{').replace(']]', '}')
 
 
 def test_sub_dict():
@@ -375,10 +376,10 @@ def test_sub_dict():
             a=[1, 2, 3, 4],
             b=[1, 2, 3, 4],
             x="""<font color='black'>"somekey": [<br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 1 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 2 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 3 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 4 </font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;1,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;2,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;3,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;4</font><br/>
 ],</font><br/>
 """
         ),
@@ -387,11 +388,11 @@ def test_sub_dict():
             a=[1, 2, 3, 4],
             b=[1, 2, 3, 4, 5],
             x="""<font color='black'>"somekey": [<br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 1 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 2 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 3 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 4 ,</font><br/>
-<font color='red'>&nbsp;&nbsp;&nbsp;&nbsp; 5 </font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;1,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;2,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;3,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;4,</font><br/>
+<font color='red'>&nbsp;&nbsp;&nbsp;&nbsp;5</font><br/>
 ],</font><br/>
 """
         ),
@@ -404,6 +405,9 @@ def test_sub_dict():
 
     for value in values:
         result = process_sub_dict("somekey", value["a"], value["b"], 0)
+        if result != value['x']:
+            print("RE",result)
+            print("EX", value['x'])
         assert result == value['x']
 
     try:
@@ -439,7 +443,7 @@ def test_constructor():
 
 
 def test_diff_list():
-    from security_monkey.common.PolicyDiff import difflist
+    from security_monkey.common.PolicyDiff import diff_list
 
     values = [
         dict(
@@ -447,11 +451,11 @@ def test_diff_list():
             b=["1", u"2", 3, 3.0, True, False, None, dict(a="123"), ["list"], set([1,2,3])],
             x="""<font color='black'>"1",</font><br/>
 <font color='black'>"2",</font><br/>
-<font color='black'> 3 ,</font><br/>
-<font color='black'> 3.0 ,</font><br/>
-<font color='black'> true ,</font><br/>
-<font color='black'> false ,</font><br/>
-<font color='black'> null ,</font><br/>
+<font color='black'>3,</font><br/>
+<font color='black'>3.0,</font><br/>
+<font color='black'>true,</font><br/>
+<font color='black'>false,</font><br/>
+<font color='black'>null,</font><br/>
 <font color='black'>{<br/>
 <font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;"a": "123"</font><br/>
 },</font><br/>
@@ -463,17 +467,17 @@ def test_diff_list():
         dict(
             a=[1, 2, 3],
             b=[1, 3, 4],
-            x="""<font color='black'> 1 ,</font><br/>
-<font color='black'> 3 ,</font><br/>
-<font color='red'> 4 ,</font><br/>
-<font color='green'> 2 </font><br/>
+            x="""<font color='black'>1,</font><br/>
+<font color='black'>3,</font><br/>
+<font color='red'>4,</font><br/>
+<font color='green'>2</font><br/>
 """
         ),
         dict(
             a=["str", True, [1, 3], set([1, 2])],
             b=[],
             x="""<font color='green'>"str",</font><br/>
-<font color='green'> true ,</font><br/>
+<font color='green'>true,</font><br/>
 <font color='green'>[<br/>
 <font color='green'>&nbsp;&nbsp;&nbsp;&nbsp;1,</font><br/>
 <font color='green'>&nbsp;&nbsp;&nbsp;&nbsp;3</font><br/>
@@ -483,19 +487,19 @@ def test_diff_list():
         dict(
             a=[True],
             b=[False],
-            x="""<font color='red'> false ,</font><br/>
-<font color='green'> true </font><br/>
+            x="""<font color='red'>false,</font><br/>
+<font color='green'>true</font><br/>
 """
         ),
         dict(
             a=[[1, 2, 3, 4, 5]],
             b=[[1, 2, 3, 4, 4]],
             x="""<font color='black'>[<br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 1 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 2 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 3 ,</font><br/>
-<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp; 4 ,</font><br/>
-<font color='green'>&nbsp;&nbsp;&nbsp;&nbsp; 5 </font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;1,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;2,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;3,</font><br/>
+<font color='black'>&nbsp;&nbsp;&nbsp;&nbsp;4,</font><br/>
+<font color='green'>&nbsp;&nbsp;&nbsp;&nbsp;5</font><br/>
 ]</font><br/>
 """
         ),
@@ -519,10 +523,10 @@ def test_diff_list():
             b=["<script>", u"<script>", 1234, 1234.0, True, None, [1, 2, 3], {"a": 1}, set([1])],
             x="""<font color='red'>"&lt;script&gt;",</font><br/>
 <font color='red'>"&lt;script&gt;",</font><br/>
-<font color='red'> 1234 ,</font><br/>
-<font color='red'> 1234.0 ,</font><br/>
-<font color='red'> true ,</font><br/>
-<font color='red'> null ,</font><br/>
+<font color='red'>1234,</font><br/>
+<font color='red'>1234.0,</font><br/>
+<font color='red'>true,</font><br/>
+<font color='red'>null,</font><br/>
 <font color='red'>[<br/>
 <font color='red'>&nbsp;&nbsp;&nbsp;&nbsp;1,</font><br/>
 <font color='red'>&nbsp;&nbsp;&nbsp;&nbsp;2,</font><br/>
@@ -536,14 +540,15 @@ def test_diff_list():
     ]
 
     for value in values:
-        result = difflist(value["a"], value["b"], 0)
+        result = diff_list(value["a"], value["b"], 0)
         if result != value['x']:
-            print(result)
+            print("RE", result)
+            print("EX", value['x'])
         assert result == value['x']
 
 
 def test_diff_dict():
-    from security_monkey.common.PolicyDiff import diffdict
+    from security_monkey.common.PolicyDiff import diff_dict
 
     values = [
         dict(
@@ -560,7 +565,7 @@ def test_diff_dict():
         dict(
             a={"a": "str"},
             b={"a": 1234},
-            x="""<font color='red'>"a":  1234 ,</font><br/>
+            x="""<font color='red'>"a": 1234,</font><br/>
 <font color='green'>"a": "str"</font><br/>
 """
         ),
@@ -585,7 +590,7 @@ def test_diff_dict():
     ]
 
     for value in values:
-        result = diffdict(value["a"], value["b"], 0)
+        result = diff_dict(value["a"], value["b"], 0)
         if result != value['x']:
             print(result)
         assert result == value['x']
