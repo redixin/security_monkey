@@ -50,7 +50,7 @@ setup(
         'dpath==1.3.2',
         'pyyaml==3.11',
         'jira==0.32',
-        'cloudaux>=1.0.3',
+        'cloudaux>=1.0.4',
         'joblib>=0.9.4',
         'pyjwt>=1.01',
         'healthcheck>=1.2.0',
