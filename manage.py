@@ -111,7 +111,7 @@ def start_scheduler():
     from security_monkey import scheduler
     scheduler.setup_scheduler()
     scheduler.scheduler.start()
-e
+
 
 @manager.command
 def sync_jira():
