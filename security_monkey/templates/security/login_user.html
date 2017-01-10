@@ -58,7 +58,7 @@
 
           <br />
           <div class="login-or"><hr class="hr-or"><span class="span-or">OR</span></div>
-          <input id="csrf_token" name="csrf_token" type="hidden" value="{{ login_user_form.csrf_token }}">
+          {{ login_user_form.csrf_token }}
           <input type="email" class="form-control" placeholder="Email address" id="email" name="email" required autofocus>
           <input type="password" class="form-control" placeholder="Password" id="password" name="password" required>
           {{ render_generic_error(login_user_form.email, login_user_form.password) }}
