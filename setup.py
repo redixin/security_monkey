@@ -49,7 +49,7 @@ setup(
         'Flask-Security-Fork==2.0.1',
         'Flask-WTF>=0.14.2',
         'Jinja2>=2.8.1',
-        'SQLAlchemy==0.9.2',
+        'SQLAlchemy==1.2.0b3',
         'boto>=2.41.0',
         'ipaddr==2.1.11',
         'itsdangerous==0.23',

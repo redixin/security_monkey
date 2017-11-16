@@ -70,7 +70,13 @@ if app.config.get("AWS_GOVCLOUD"):
 
 ARN_PREFIX= 'arn:' + ARN_PARTITION
 
-db = SQLAlchemy(app)
+class SQLAlchemy_pre_ping(SQLAlchemy):
+
+    def apply_driver_hacks(self, app, info, options):
+        super(SQLAlchemy_pre_ping, self).apply_driver_hacks(app, info, options)
+        options["pool_pre_ping"] = True
+
+db = SQLAlchemy_pre_ping(app)
 
 # For ELB and/or Eureka
 @app.route('/healthcheck')
